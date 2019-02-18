@@ -54,8 +54,10 @@ std::vector<uint64_t> VideoDNA(const char * input_filename, char * weight, doubl
 	int y_size;
 	int ret, got_picture;
 	struct SwsContext *img_convert_ctx;
-	static int scale_down_rows = 32;
-	static int scale_down_cols = 32;
+	static const int scale_down_rows = 64;
+	static const int scale_down_cols = 64;
+	static const int crop_rows = 32;
+	static const int crop_cols = 32;
 	static Extractor extractor = Extractor(weight);
 
 	mylog << "input video file " << input_filename << std::endl;
@@ -143,7 +145,6 @@ std::vector<uint64_t> VideoDNA(const char * input_filename, char * weight, doubl
 				if (frame_idx % fps == 0) {
 					sws_scale(img_convert_ctx,(const unsigned char* const *) pFrame->data,pFrame->linesize, 0, pCodecCtx->height,pFrameYUV->data, pFrameYUV->linesize);
 
-					y_size = scale_down_cols * scale_down_rows;
 					uint8_t * Y = pFrameYUV->data[0];
 					uint8_t * U = pFrameYUV->data[1];
 					uint8_t * V = pFrameYUV->data[2];
@@ -161,6 +162,35 @@ std::vector<uint64_t> VideoDNA(const char * input_filename, char * weight, doubl
 						}
 					}
 
+					mY = mY(16,16+crop_rows-1,16,16+crop_cols-1);
+					mU = mU(16,16+crop_rows-1,16,16+crop_cols-1);
+					mV = mV(16,16+crop_rows-1,16,16+crop_cols-1);
+
+//					std::ofstream fY("Y.txt",std::ios::out);
+//					for (int i = 0; i < 32; ++i) {
+//						for (int j = 0; j < 32; ++j) {
+//							fY << mY(i, j) << " ";
+//						}
+//						fY << std::endl;
+//					}
+//
+//					std::ofstream fU("U.txt",std::ios::out);
+//					for (int i = 0; i < 32; ++i) {
+//						for (int j = 0; j < 32; ++j) {
+//							fU << mU(i, j) << " ";
+//						}
+//						fU << std::endl;
+//					}
+//
+//					std::ofstream fV("V.txt",std::ios::out);
+//					for (int i = 0; i < 32; ++i) {
+//						for (int j = 0; j < 32; ++j) {
+//							fV << mV(i, j) << " ";
+//						}
+//						fV << std::endl;
+//					}
+
+					y_size = crop_cols * crop_rows;
 					mY = itpp::reshape(mY, y_size, 1);
 					mU = itpp::reshape(mU, y_size, 1);
 					mV = itpp::reshape(mV, y_size, 1);
@@ -216,6 +246,11 @@ std::vector<uint64_t> VideoDNA(const char * input_filename, char * weight, doubl
 				}
 			}
 
+			mY = mY(16,16+crop_rows-1,16,16+crop_cols-1);
+			mU = mU(16,16+crop_rows-1,16,16+crop_cols-1);
+			mV = mV(16,16+crop_rows-1,16,16+crop_cols-1);
+
+			y_size = crop_cols * crop_rows;
 			mY = itpp::reshape(mY, y_size, 1);
 			mU = itpp::reshape(mU, y_size, 1);
 			mV = itpp::reshape(mV, y_size, 1);

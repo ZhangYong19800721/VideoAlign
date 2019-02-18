@@ -80,9 +80,9 @@ int main(int argc, char* argv[]) {
 				weight, 1.0 / FPS);
 		if (shortDNA_i.empty()) {
 			std::cout << "Error: Problem encountered when extract DNA from "
-					<< long_video_name << std::endl;
+					<< short_video_name << std::endl;
 			mylog << "Error: Problem encountered when extract DNA from "
-					<< long_video_name << std::endl;
+					<< short_video_name << std::endl;
 			exit(EXTRACT_DNA_ERROR);
 		}
 		if (shortDNA_i.size() > longDNA.size()) {
