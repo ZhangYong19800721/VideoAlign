@@ -16,10 +16,10 @@ int find(const vector<unsigned long>& gene1, const vector<unsigned long>& gene2)
 		long score = 0, best_score = 0;
 		for (unsigned int i = 0; i < gene2.size(); ++i) {
 			unsigned int dis = hamming(gene1[shift + i] ^ gene2[i]);
-			score += dis <= 1 ? 8 : -5;
+			score += dis <= 2 ? 8 : -5;
 			best_score = score > best_score ? score : best_score;
-			if (best_score - score > 100) // if 20 frames dismatch then stop comparison
-				break;
+			//if (best_score - score > 100) // if 20 frames dismatch then stop comparison
+			//	break;
 		}
 		score_vec.push_back(best_score);
 	}
