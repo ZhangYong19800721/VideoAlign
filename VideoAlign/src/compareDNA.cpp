@@ -4,24 +4,30 @@
 #include <algorithm>
 using namespace std;
 
+#include <itpp/itbase.h>
+
 extern unsigned int hamming(const unsigned long A);
 
-int find(const vector<unsigned long>& gene1, const vector<unsigned long>& gene2) {
+int find(const vector<std::pair<unsigned long, unsigned long> >& gene1,
+		 const vector<std::pair<unsigned long, unsigned long> >& gene2) {
 	const int INVALID = -1;
 	if (gene1.empty() || gene2.empty())
 		return INVALID;
 
 	vector<long> score_vec;
-	for (unsigned int shift = 0; shift <= (gene1.size() - gene2.size()); ++shift) {
-		long score = 0, best_score = 0;
-		for (unsigned int i = 0; i < gene2.size(); ++i) {
-			unsigned int dis = hamming(gene1[shift + i] ^ gene2[i]);
-			score += dis <= 2 ? 8 : -5;
-			best_score = score > best_score ? score : best_score;
-			//if (best_score - score > 100) // if 20 frames dismatch then stop comparison
-			//	break;
+	for (unsigned int shift=0; shift<gene1.size(); ++shift) {
+		long score = 0;
+		for (unsigned int i=0; i<gene2.size(); ++i) {
+			unsigned int dis1 = (shift+i)<gene1.size()? hamming(gene1[shift + i].first ^ gene2[i].first) : 64;
+			if (dis1 <= 2) {
+				score += 9;
+			}
+			else {
+				unsigned int dis2 = (shift+i)<gene1.size()? hamming(gene1[shift + i].second ^ gene2[i].second) : 64;
+				score += dis2 <= 2 ? 8 : -5;
+			}
 		}
-		score_vec.push_back(best_score);
+		score_vec.push_back(score);
 	}
 
 	vector<long>::iterator maxpos = std::max_element(score_vec.begin(),score_vec.end());

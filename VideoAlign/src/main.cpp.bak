@@ -15,10 +15,10 @@ enum ERRORCODE {
 	EXTRACT_DNA_ERROR = 991, LONG_SHORT_DNA_ERROR, OTHER_ERROR
 };
 
-extern std::vector<std::pair<uint64_t,uint64_t> > VideoDNA(const char * input_filename,
+extern std::vector<uint64_t> VideoDNA(const char * input_filename,
 		char * weight, double dDNAPS);
-extern int find(const std::vector<std::pair<uint64_t,uint64_t> >& gene1,
-		 const std::vector<std::pair<uint64_t,uint64_t> >& gene2);
+extern int find(const std::vector<uint64_t>& gene1,
+		const std::vector<uint64_t>& gene2);
 
 int main(int argc, char* argv[]) {
 	/*
@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
 
 	Value seqs_out(kArrayType);
 	const char * long_video_name = doc_in["base"]["basePath"].GetString();
-	std::vector<std::pair<uint64_t,uint64_t> > longDNA = VideoDNA(long_video_name, weight,
+	std::vector<unsigned long> longDNA = VideoDNA(long_video_name, weight,
 			1.0 / FPS);
 
 	if (longDNA.empty()) {
@@ -73,10 +73,10 @@ int main(int argc, char* argv[]) {
 		exit(EXTRACT_DNA_ERROR);
 	}
 
-	std::vector<std::vector<std::pair<uint64_t,uint64_t> > > shortDNA;
+	std::vector<std::vector<unsigned long> > shortDNA;
 	for (SizeType i = 0; i < seqs_in.Size(); i++) {
 		const char * short_video_name = seqs_in[i]["seqPath"].GetString();
-		std::vector<std::pair<uint64_t,uint64_t> > shortDNA_i = VideoDNA(short_video_name,
+		std::vector<unsigned long> shortDNA_i = VideoDNA(short_video_name,
 				weight, 1.0 / FPS);
 		if (shortDNA_i.empty()) {
 			std::cout << "Error: Problem encountered when extract DNA from "
